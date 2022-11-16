@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  ihold_micro_socket_nginx:
+    container_name: ihold_micro_socket_nginx
+    build:
+      context: .
+      dockerfile: docker/config/nginx/staging.Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.ihold_micro_socket_nginx.rule=Host(`staging.websocket.banking.wedev.software`)"
+      - "traefik.http.routers.ihold_micro_socket_nginx.entrypoints=websecure"
+      - "traefik.http.routers.ihold_micro_socket_nginx.tls=true"
+      - "traefik.http.routers.ihold_micro_socket_nginx.tls.certresolver=wedevresolver"
+    networks:
+      - internal
+      - web
+
+  ihold_micro_socket:
+    container_name: ihold_micro_socket
+    build:
+      context: .
+      dockerfile: docker/config/app/app.Dockerfile
+    networks:
+      - internal
+
+networks:
+  web:
+    external: true
+
+  internal:
+    external: false
